@@ -5,13 +5,11 @@ from sklearn import svm
 import pickle
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LinearRegression
-from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.svm import SVR
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn import pipeline
 import numpy as np
-from sklearn.metrics import confusion_matrix, classification_report, plot_confusion_matrix,\
-    mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 
 def func1():
@@ -100,15 +98,15 @@ def lab1_6():
 
 def lab1_7():
     data = datasets.fetch_openml(data_id=40536, as_frame=True) # as_frame jako data frame good to know
-    # print(data.data) # wyswietl tabele
+    print(data.data) # wyswietl tabele
 
-    # X_train, X_test, y_train, y_test = train_test_split(X, Y,
-    #                                                     train_size=0.8, random_state=42, shuffle=True)
-    # classifier = RandomForestClassifier()
-    # classifier.fit(X_train, y_train)
-    #
-    # print("Train score: ", classifier.score(X_train, y_train))
-    # print("Test score: ", classifier.score(X_test, y_test))
+    X_train, X_test, y_train, y_test = train_test_split(X, Y,
+                                                        train_size=0.8, random_state=42, shuffle=True)
+    classifier = RandomForestClassifier()
+    classifier.fit(X_train, y_train)
+
+    print("Train score: ", classifier.score(X_train, y_train))
+    print("Test score: ", classifier.score(X_test, y_test))
 
 
 def lab1_8():
@@ -182,102 +180,6 @@ def lab1_8_regresja():
     plt.show()
 
 
-def lab2_bramki():
-    X = [[0, 0],
-         [0, 1],
-         [1, 0],
-         [1, 1]]
-    y = [0, 1, 1, 1]
-
-    clf = DecisionTreeClassifier()
-    clf.fit(X, y)
-
-    print(clf.predict([[0, 1]]))  # Sprawdź sam(a) jakie będą wyniki dla innych danych wejściowych.
-    plot_tree(clf)
-    plt.show()
-
-
-def auta():
-    dict1 = {'VW': 0, 'Ford': 1, 'Opel': 2}
-    dict2 = {'Wypadkowy': 1, 'Nie Wypadkowy': 0}
-
-    # data = [['VW', 'VW', 'VW', 'Ford', 'Ford', 'Ford', 'Opel', 'Opel', 'Opel'],
-    #         [10000, 1000, 10000, 100, 100000, 100000, 200000, 100, 10000],
-    #         ['Wypadkowy', ' Nie Wypadkowy', 'Nie wypadkowy', 'Wypadkowy', 'Nie wypadkowy', 'Nie wypadkowy', 'Nie wypadkowy' 'Wypadkowy', 'Wypadkowy'],
-    #         [0, 1, 1, 0, 1, 0, 0, 0, 0]
-    #         ]
-
-    # X = []
-    # for ind, val in enumerate(data[0]):
-    #     print([val, data[1][ind], data[2][ind]])
-    #     X.append([val, data[1][ind], data[2][ind]])
-    #
-    # Y = data[3]
-    # print(X)
-
-    # Wiecej sensu ma taka budowa XD:
-    data = [
-        ['VW', 10000, 'Wypadkowy'],
-        ['VW', 10000, 'Nie Wypadkowy'],
-        ['Ford', 1000, 'Wypadkowy'],
-        ['Ford', 100000, 'Nie Wypadkowy'],
-        ['Ford', 200000, 'Nie Wypadkowy'],
-        ['Opel', 100, 'Wypadkowy'],
-        ['Opel', 10000, 'Nie Wypadkowy']
-    ]
-
-    Y = ['Nie kupowac', 'Kupic', 'Nie kupowac', 'Kupic', 'Nie kupowac', 'Nie kupowac', 'Kupic']
-
-    for d in data:
-        d[0] = dict1[d[0]]
-        d[2] = dict2[d[2]]
-
-    X = data
-
-    X_train, X_test, y_train, y_test = train_test_split(X, Y,
-                                                        train_size=0.8, random_state=42, shuffle=True)
-    classifier = DecisionTreeClassifier()
-    classifier.fit(X_train, y_train)
-
-    print("Train score: ", classifier.score(X_train, y_train))
-    print("Test score: ", classifier.score(X_test, y_test))
-    print("Predict: ", classifier.predict([[dict1['Opel'], 100000, dict2['Wypadkowy']]]))
-
-    plot_tree(classifier, filled=True)
-    plt.show()
-
-
-def digits_confuion():
-    digits = datasets.load_digits()
-
-    X_train, X_test, y_train, y_test = train_test_split(digits.data, digits.target,
-                                                        train_size=0.7, random_state=42, shuffle=True)
-
-    clf = svm.SVC()
-    clf.fit(X_train, y_train)
-
-    print("Predicted: ", clf.predict([digits.data[-1]])[0])
-    print("True value: ", digits.target[-1])
-
-    y_predicted = clf.predict(X_test)
-    print(classification_report(y_test, y_predicted))
-    print(confusion_matrix(y_test, y_predicted))
-
-    # Wyswietl kilka blednych dopasowan
-    for digit, gt, pred in zip(X_test, y_test, y_predicted):
-        if gt != pred:
-            print('Sample ', str(digit), 'classified as ', str(pred), 'while it should be ', str(gt))
-            # plt.imshow(digit.reshape(8, 8), cmap=plt.cm.gray_r)
-            # plt.show()
-
-    plot_confusion_matrix(clf, X_test, y_test)
-    plt.show()
-
-
-def lab3_1():
-    pass
-
-
 if __name__ == "__main__":
     # func1()
     # lab1_4()
@@ -285,8 +187,4 @@ if __name__ == "__main__":
     # lab1_6()
     # lab1_7()
     # lab1_8()
-    # lab1_8_regresja()
-    # lab2_bramki()
-    # auta()
-    # digits_confuion()
-    lab3_1()
+    lab1_8_regresja()
