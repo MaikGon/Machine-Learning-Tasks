@@ -156,11 +156,37 @@ def lab3_2():
 
 
 def lab3_3():
-    pass
+    # fashion mnist, search for best hyperparameters
+    data = datasets.fetch_openml(name='Fashion-MNIST')
+    X = data['data']
+    X = X[:, [0, 2]]
+    y = data['target']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.75, random_state=42, stratify=y)
+    min_max_scaler = preprocessing.MinMaxScaler()
+    min_max_scaler.fit(X_train)
+
+    # Now search for best hyperparameters
+    param_grid = [
+        {'C': [1, 10, 100], 'kernel': ['linear']},
+        {'C': [1, 10, 100], 'gamma': [0.001, 0.0001], 'kernel': ['rbf']}
+    ]
+
+    clf_gs = model_selection.GridSearchCV(estimator=svm.SVC(), param_grid=param_grid, n_jobs=4, verbose=20)
+    clf_gs.fit(X_train, y_train)
+    print(clf_gs.cv_results_)
+
+    svm_clf = svm.SVC(kernel='poly')
+    svm_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, svm_clf.predict(X_test))
+    print("SVM accuracy: ", acc_svm)
+
+    plt.figure()
+    plot_decision_regions(X_train, y_train, clf=svm_clf, legend=2)
+    plt.show()
 
 
 if __name__ == "__main__":
     # lab3_1()
     # lab3_1_1()
-    lab3_2()
-    # lab3_3()
+    # lab3_2()
+    lab3_3()
