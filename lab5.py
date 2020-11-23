@@ -164,17 +164,16 @@ def outliers_2():
 
     x_data = np.vstack([mass, plas]).T
     print(x_data)
-    forest = IsolationForest()
+    print(y)
+    forest = IsolationForest(contamination='auto')
     forest.fit(x_data, y)
 
     y_predicted = []
     for data in x_data:
         y_predicted.append(forest.predict([data]))
 
-    plt.scatter(x_data, y)
-    plt.scatter(x_data, y_predicted, marker="*", c='red')
-
-    plt.show()
+    acc_opt = metrics.accuracy_score(y, y_predicted)
+    print("IsolationForest accuracy rand: ", acc_opt)
 
 
 if __name__ == "__main__":

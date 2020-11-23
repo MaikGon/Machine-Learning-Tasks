@@ -10,6 +10,8 @@ from yellowbrick.contrib.classifier import DecisionViz
 from sklearn import svm, tree, ensemble, linear_model
 from sklearn import metrics
 from sklearn import model_selection
+import seaborn as sns
+import pandas as pd
 
 
 def lab3_1():
@@ -139,6 +141,12 @@ def lab3_2():
     clf_gs.fit(X_train, y_train)
     print(clf_gs.cv_results_)
 
+    pvt = pd.pivot_table(pd.DataFrame(clf_gs.cv_results_), values='mean_test_score',
+        index='param_kernel', columns='param_C')
+
+    sns.heatmap(pvt)
+    plt.show()
+
     print("SVM: ", svm_clf.predict(min_max_scaler.transform([[8.0, 4.0]])))
     print("Linear: ", linear_clf.predict(min_max_scaler.transform([[8.0, 4.0]])))
     print("Decision tree: ", tree_clf.predict(min_max_scaler.transform([[8.0, 4.0]])))
@@ -174,6 +182,12 @@ def lab3_3():
     clf_gs = model_selection.GridSearchCV(estimator=svm.SVC(), param_grid=param_grid, n_jobs=4, verbose=20)
     clf_gs.fit(X_train, y_train)
     print(clf_gs.cv_results_)
+
+    pvt = pd.pivot_table(pd.DataFrame(clf_gs.cv_results_), values='mean_test_score',
+        index='param_kernel', columns='param_C')
+
+    sns.heatmap(pvt)
+    plt.show()
 
     svm_clf = svm.SVC(kernel='poly')
     svm_clf.fit(X_train, y_train)
