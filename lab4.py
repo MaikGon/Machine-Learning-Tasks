@@ -118,7 +118,7 @@ def beach_forest_classifier():
     X = np.array(hist_arr)
     X = X.reshape(40, -1)
 
-    kmeans = KMeans(n_clusters=2, algorithm='elkan').fit(X)
+    kmeans = KMeans(n_clusters=2, algorithm='elkan', random_state=42).fit(X)
 
     dict1 = {0: 'Beach', 1: 'Forest'}
     results = []

@@ -1,16 +1,16 @@
 from sklearn import datasets
 import matplotlib.pyplot as plt
 import numpy as np
-from mlxtend.plotting import plot_decision_regions
 from sklearn import metrics
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, IsolationForest
 from sklearn import svm, tree
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import SimpleImputer, KNNImputer, IterativeImputer
+from scipy.stats import zscore
 
 
 def ensamble():
@@ -127,22 +127,59 @@ def missing_data():
 
 
 def outliers():
-    data = datasets.load_diabetes()
+    data = datasets.fetch_openml(name='diabetes', as_frame=True)
     X = data.data
+    print(X)
     y = data.target
-    print(X, y)
+    mass = X['mass']
 
-    counts, bins = np.histogram(X)
+    zsc = zscore(X['mass'])
+    list_zsc = list(zsc)
+    for ind, val in enumerate(list_zsc):
+        if val >= 3.0:
+            list_zsc.remove(val)
+
+    counts, bins = np.histogram(mass)
     plt.figure()
     plt.hist(bins[:-1], bins, weights=counts)
+    plt.figure()
+    plt.boxplot(mass)
 
     plt.figure()
-    plt.boxplot(X)
+    plt.hist(bins[:-1], bins, weights=counts)
+    plt.figure()
+    plt.boxplot(list_zsc)
+    plt.figure()
+    plt.plot(X['plas'], mass, '.b')
+    plt.show()
+
+
+def outliers_2():
+    data = datasets.fetch_openml(name='diabetes', as_frame=True)
+    X = data.data
+    print(X)
+    y = data.target
+    mass = X['mass']
+    plas = X['plas']
+
+    x_data = np.vstack([mass, plas]).T
+    print(x_data)
+    forest = IsolationForest()
+    forest.fit(x_data, y)
+
+    y_predicted = []
+    for data in x_data:
+        y_predicted.append(forest.predict([data]))
+
+    plt.scatter(x_data, y)
+    plt.scatter(x_data, y_predicted, marker="*", c='red')
+
     plt.show()
 
 
 if __name__ == "__main__":
     # ensamble()
     # missing_data()
-    outliers()
+    # outliers()
+    outliers_2()
 
