@@ -92,7 +92,7 @@ def dimensions():
 
 def beach_forest_classifier():
     images_arr = []
-    labels = []
+    y = []
     # path to dataset
     beach_dir = Path('./beach_forest/')
 
@@ -102,9 +102,9 @@ def beach_forest_classifier():
     # read images with openCV
     for im in sorted(images):
         if str(im)[-7] == 'f':
-            labels.append('Forest')
+            y.append('Forest')
         elif str(im)[-7] == 'b':
-            labels.append('Beach')
+            y.append('Beach')
         image = cv2.imread(str(im))
         images_arr.append(image)
 
@@ -115,10 +115,10 @@ def beach_forest_classifier():
             hist = cv2.calcHist([images_arr[i]], [j], None, [8], [0, 256])
             hist_arr.append(hist)
 
-    X, y = images_arr, np.array(hist_arr)
-    y = y.reshape(40, -1)
+    X = np.array(hist_arr)
+    X = X.reshape(40, -1)
 
-    kmeans = KMeans(n_clusters=2, algorithm='elkan').fit(np.array(y))
+    kmeans = KMeans(n_clusters=2, algorithm='elkan').fit(X)
 
     dict1 = {0: 'Beach', 1: 'Forest'}
     results = []
@@ -127,11 +127,11 @@ def beach_forest_classifier():
         results.append(dict1[kmeans.labels_[i]])
 
     print(results)
-    print(labels)
+    print(y)
 
-    acc_kmeans = metrics.adjusted_rand_score(labels, results)
+    acc_kmeans = metrics.adjusted_rand_score(y, results)
     print("Kmeans accuracy rand: ", acc_kmeans)
-    acc_kmeans = metrics.adjusted_mutual_info_score(labels, results)
+    acc_kmeans = metrics.adjusted_mutual_info_score(y, results)
     print("Kmeans accuracy mutual: ", acc_kmeans)
 
 
