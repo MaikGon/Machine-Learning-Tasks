@@ -59,70 +59,106 @@ def ensamble():
 
 
 def missing_data():
-    data = datasets.fetch_openml(name='diabetes')
-    X = data['data']
-    y = data['target']
+    data = datasets.fetch_openml(name='diabetes', as_frame=True)
+    X = data.data
+    y = data.target
+    # y[y == 'tested_positive'] = 1
+    # y[y == 'tested_negative'] = 0
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.75, random_state=42, stratify=y)
 
-    simple_imp = SimpleImputer()
-    simple_imp.fit(X_train, y_train)
+    # Show some info
+    plt.figure()
+    X_train.boxplot()
+    plt.figure()
+    sns.boxplot(x=X_train['mass'])
+    X_train.hist()
 
-    iter_imp = IterativeImputer()
-    iter_imp.fit(X_train, y_train)
-
-    knn_imp = KNNImputer()
-    knn_imp.fit(X_train, y_train)
-
-    forest_clf = RandomForestClassifier()
+    # Init classifiers
+    forest_clf = RandomForestClassifier(random_state=42)
     forest_clf.fit(X_train, y_train)
     acc_forest = metrics.accuracy_score(y_test, forest_clf.predict(X_test))
     print("Random forest accuracy: ", acc_forest)
 
-    forest_clf.fit(simple_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, forest_clf.predict(simple_imp.transform(X_test)))
-    print("Random forest accuracy simple: ", acc_svm)
-
-    forest_clf.fit(iter_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, forest_clf.predict(iter_imp.transform(X_test)))
-    print("Random forest accuracy iterative: ", acc_svm)
-
-    forest_clf.fit(knn_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, forest_clf.predict(knn_imp.transform(X_test)))
-    print("Random forest accuracy knn: ", acc_svm)
-
-    tree_clf = tree.DecisionTreeClassifier()
+    tree_clf = tree.DecisionTreeClassifier(random_state=42)
     tree_clf.fit(X_train, y_train)
     acc_tree = metrics.accuracy_score(y_test, tree_clf.predict(X_test))
     print("Decision tree accuracy: ", acc_tree)
 
-    tree_clf.fit(simple_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, tree_clf.predict(simple_imp.transform(X_test)))
-    print("Decision tree accuracy simple: ", acc_svm)
-
-    tree_clf.fit(iter_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, tree_clf.predict(iter_imp.transform(X_test)))
-    print("Decision tree accuracy iterative: ", acc_svm)
-
-    tree_clf.fit(knn_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, tree_clf.predict(knn_imp.transform(X_test)))
-    print("Decision tree accuracy knn: ", acc_svm)
-
-    svm_clf = svm.SVC()
+    svm_clf = svm.SVC(random_state=42)
     svm_clf.fit(X_train, y_train)
     acc_svm = metrics.accuracy_score(y_test, svm_clf.predict(X_test))
     print("SVM accuracy: ", acc_svm)
 
-    svm_clf.fit(simple_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, svm_clf.predict(simple_imp.transform(X_test)))
+    # Show importances for Random Forest Classifier
+    importances = forest_clf.feature_importances_
+    std = np.std([trees.feature_importances_ for trees in forest_clf.estimators_], axis=0)
+    indices = np.argsort(importances)[::-1]
+    print("Feature ranking:")
+
+    for f in range(X.shape[1]):
+        print("%d. feature %d (%f(" % (f + 1, indices[f], importances[indices[f]]))
+
+    plt.figure()
+    plt.title("Feature importances")
+    plt.bar(range(X.shape[1]), importances[indices], color='r', yerr=std[indices], align='center')
+    plt.xticks(range(X.shape[1]), indices)
+    plt.xlim([-1, X.shape[1]])
+    plt.show()
+
+    # Init imputers
+    simple_imp = SimpleImputer(missing_values=0.0, strategy='mean')
+    simple_imp.fit(X_train[['mass']])
+
+    iter_imp = IterativeImputer(missing_values=0.0)
+    iter_imp.fit(X_train[['mass']])
+
+    knn_imp = KNNImputer(missing_values=0.0, n_neighbors=2)
+    knn_imp.fit(X_train[['mass']])
+
+    # Test simple imputer
+    X_train[['mass']] = simple_imp.transform(X_train[['mass']])
+
+    forest_clf.fit(X_train, y_train)
+    acc_forest = metrics.accuracy_score(y_test, forest_clf.predict(X_test))
+    print("Random forest accuracy simple: ", acc_forest)
+
+    tree_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, tree_clf.predict(X_test))
+    print("Decision tree accuracy simple: ", acc_svm)
+
+    svm_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, svm_clf.predict(X_test))
     print("SVM accuracy simple: ", acc_svm)
 
-    svm_clf.fit(iter_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, svm_clf.predict(iter_imp.transform(X_test)))
+    # Test iterative imputer
+    X_train[['mass']] = iter_imp.transform(X_train[['mass']])
+
+    forest_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, forest_clf.predict(X_test))
+    print("Random forest accuracy iterative: ", acc_svm)
+
+    tree_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, tree_clf.predict(X_test))
+    print("Decision tree accuracy iterative: ", acc_svm)
+
+    svm_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, svm_clf.predict(X_test))
     print("SVM accuracy iterative: ", acc_svm)
 
-    svm_clf.fit(knn_imp.transform(X_train), y_train)
-    acc_svm = metrics.accuracy_score(y_test, svm_clf.predict(knn_imp.transform(X_test)))
+    # Test KNN imputer
+    X_train[['mass']] = knn_imp.transform(X_train[['mass']])
+
+    forest_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, forest_clf.predict(X_test))
+    print("Random forest accuracy knn: ", acc_svm)
+
+    tree_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, tree_clf.predict(X_test))
+    print("Decision tree accuracy knn: ", acc_svm)
+
+    svm_clf.fit(X_train, y_train)
+    acc_svm = metrics.accuracy_score(y_test, svm_clf.predict(X_test))
     print("SVM accuracy knn: ", acc_svm)
 
 
@@ -166,14 +202,13 @@ def outliers_2():
     print(x_data)
     print(y)
     forest = IsolationForest(contamination='auto')
-    forest.fit(x_data, y)
+    forest.fit(x_data)
 
     y_predicted = []
     for data in x_data:
         y_predicted.append(forest.predict([data]))
 
-    acc_opt = metrics.accuracy_score(y, y_predicted)
-    print("IsolationForest accuracy rand: ", acc_opt)
+
 
 
 if __name__ == "__main__":
