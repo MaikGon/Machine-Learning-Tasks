@@ -22,6 +22,7 @@ def lab2_bramki():
 
 
 def auta():
+    # Just a simple prediction for different cars
     dict1 = {'VW': 0, 'Ford': 1, 'Opel': 2}
     dict2 = {'Wypadkowy': 1, 'Nie Wypadkowy': 0}
 
@@ -39,7 +40,7 @@ def auta():
     # Y = data[3]
     # print(X)
 
-    # Wiecej sensu ma taka budowa:
+    # This solution makes more sense
     data = [
         ['VW', 10000, 'Wypadkowy'],
         ['VW', 10000, 'Nie Wypadkowy'],
@@ -87,7 +88,7 @@ def digits_confusion():
     print(classification_report(y_test, y_predicted))
     print(confusion_matrix(y_test, y_predicted))
 
-    # Wyswietl kilka blednych dopasowan
+    # Show some wrong predictions
     for digit, gt, pred in zip(X_test, y_test, y_predicted):
         if gt != pred:
             print('Sample ', str(digit), 'classified as ', str(pred), 'while it should be ', str(gt))

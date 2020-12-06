@@ -40,6 +40,7 @@ def lab1_4():
     # y_train - train_labes
     # y_test - test_labels
 
+    # There is probablyy a better solution than that...
     classified_images = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], 8: [], 9: [],
                          10: [], 11: [], 12: [], 13: [], 14: [], 15: [], 16: [], 17: [], 18: [], 19: [],
                          20: [], 21: [], 22: [], 23: [], 24: [], 25: [], 26: [], 27: [], 28: [], 29: [],
@@ -51,6 +52,7 @@ def lab1_4():
 
     fix, ax = plt.subplots(nrows=5, ncols=4)
 
+    # Show some of the images
     for class_id, imgs in classified_images.items():
         if class_id == 0 or class_id == 1 or class_id == 2 or class_id == 3:
             for row, image in enumerate(imgs[:5]):
@@ -67,6 +69,7 @@ def lab1_5():
     classifier = RandomForestClassifier()
     classifier.fit(X_train, y_train)
 
+    # Show the score
     print(classifier.score(X_train, y_train))
     print(classifier.score(X_test, y_test))
 
@@ -97,7 +100,7 @@ def lab1_6():
 
 
 def lab1_7():
-    data = datasets.fetch_openml(data_id=40536, as_frame=True) # as_frame jako data frame good to know
+    data = datasets.fetch_openml(data_id=40536, as_frame=True)
     print(data.data) # wyswietl tabele
 
     X_train, X_test, y_train, y_test = train_test_split(X, Y,
@@ -110,6 +113,10 @@ def lab1_7():
 
 
 def lab1_8():
+    # If you take a look into data, you will see
+    # that you don't have to make any classifier
+    # Just this function:
+
     def regression(x):
         if x >= 4.0:
             return 8.0
@@ -134,6 +141,7 @@ def lab1_8():
 
 
 def lab1_8_regresja():
+    # Here is the previous task with the classifier solution
     data = np.loadtxt('trainingdata.txt', delimiter=',')
 
     x = data[:, 0].reshape(-1, 1)
@@ -181,10 +189,21 @@ def lab1_8_regresja():
 
 
 if __name__ == "__main__":
+    # Digits
     # func1()
+
+    # Faces
     # lab1_4()
+
+    # Iris
     # lab1_5()
+
+    # Random forest
     # lab1_6()
     # lab1_7()
+
+    # Task 8 - simple solution
     # lab1_8()
+
+    # Task 8 with regression
     lab1_8_regresja()

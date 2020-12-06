@@ -202,5 +202,5 @@ def lab3_3():
 if __name__ == "__main__":
     # lab3_1()
     # lab3_1_1()
-    # lab3_2()
-    lab3_3()
+    lab3_2()
+    # lab3_3()
