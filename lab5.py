@@ -65,7 +65,7 @@ def missing_data():
     # y[y == 'tested_positive'] = 1
     # y[y == 'tested_negative'] = 0
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.75, random_state=42, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.9, random_state=42, stratify=y)
 
     # Show some info
     plt.figure()
